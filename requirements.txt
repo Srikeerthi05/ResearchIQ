@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+pymupdf
+python-dotenv
+pydantic
+pytest
+httpx
+sentence-transformers
+faiss-cpu
+numpy
