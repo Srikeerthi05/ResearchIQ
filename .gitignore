@@ -17,3 +17,27 @@ data/processed/
 
 .history/
 desktop.ini
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+
+# Environment variables and secrets
+.env
+**/.env
+
+# Generated FAISS storage
+data/index/
+
+# Generated data
+data/processed/
+
+# Editor files
+.history/
+desktop.ini
+
+# Uploaded PDF documents
+data/uploads/

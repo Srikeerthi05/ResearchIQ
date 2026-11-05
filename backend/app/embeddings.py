@@ -1,18 +1,39 @@
 
-from sentence_transformers import SentenceTransformer, util
+import numpy as np
+from sentence_transformers import SentenceTransformer
 
-model = SentenceTransformer("all-MiniLM-L6-v2")
 
-sentences = [
-    "Artificial intelligence is transforming the world.",
-    "AI is changing how humans work.",
-    "I love eating pizza."
-]
+MODEL_NAME = "all-MiniLM-L6-v2"
 
-embeddings = model.encode(sentences, convert_to_tensor=True)
+# Shared model instance
+_model = None
 
-# Compare the meaning of the sentences
-similarity = util.cos_sim(embeddings, embeddings)
 
-print("Cosine Similarity Matrix:\n")
-print(similarity)
+def get_embedding_model():
+
+    global _model
+
+    if _model is None:
+        print("Loading embedding model...")
+        _model = SentenceTransformer(MODEL_NAME)
+
+    return _model
+
+
+def generate_embeddings(texts):
+
+    if not texts:
+        return np.empty((0, 384), dtype="float32")
+
+    model = get_embedding_model()
+
+    embeddings = model.encode(
+        texts,
+        normalize_embeddings=True,
+        convert_to_numpy=True
+    )
+
+    return np.asarray(
+        embeddings,
+        dtype="float32"
+    )

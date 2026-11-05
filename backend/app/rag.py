@@ -1,14 +1,18 @@
 
-from app.paper_search import load_or_build_search_index, search_paper
-from app.llm import generate_answer
+from backend.app.paper_search import (
+    load_document_index,
+    search_paper
+)
+
+from backend.app.llm import generate_answer
 
 
-def answer_question(question):
+def answer_question(question, document_id):
 
-    # Step 1: Build the FAISS search index
-    index, all_chunks = load_or_build_search_index()
+    # Step 1: Load the selected document's index
+    index, all_chunks = load_document_index(document_id)
 
-    # Step 2: Retrieve the top 3 relevant chunks
+    # Step 2: Retrieve relevant chunks
     results = search_paper(
         question,
         index,
@@ -16,17 +20,19 @@ def answer_question(question):
         k=3
     )
 
-    # Step 3: Handle empty search results
-    # Minimum similarity required to answer
+    # Step 3: Check relevance
     SIMILARITY_THRESHOLD = 0.30
 
     if not results or results[0]["similarity"] < SIMILARITY_THRESHOLD:
         return {
-            "answer": "I couldn't find relevant information in the research paper to answer this question.",
+            "answer": (
+                "I couldn't find relevant information "
+                "in the research paper to answer this question."
+            ),
             "sources": []
         }
 
-    # Step 4: Prepare context with page references
+    # Step 4: Prepare context
     context = ""
 
     for result in results:
@@ -35,17 +41,15 @@ def answer_question(question):
             f"{result['text']}\n"
         )
 
-    # Step 5: Create the prompt for the LLM
+    # Step 5: Build prompt
     prompt = f"""
 You are ResearchIQ, an AI research assistant.
 
-Your task is to answer questions using ONLY the research paper
-context provided below.
+Answer using ONLY the research paper context below.
 
 Rules:
 1. Do not use outside knowledge.
-2. If the answer is not available in the context,
-   clearly say that the paper does not provide the answer.
+2. If the answer is unavailable, say so.
 3. Include page references using [Page N].
 4. Never invent facts or page numbers.
 
@@ -58,10 +62,10 @@ User Question:
 Answer:
 """
 
-    # Step 6: Generate the answer using Qwen
+    # Step 6: Generate answer
     answer = generate_answer(prompt)
 
-    # Step 7: Collect source information independently
+    # Step 7: Collect sources
     sources = []
 
     for result in results:
@@ -70,30 +74,7 @@ Answer:
             "similarity": round(result["similarity"], 4)
         })
 
-    # Step 8: Return answer and sources
     return {
         "answer": answer,
         "sources": sources
     }
-
-
-# Run ResearchIQ from the terminal
-if __name__ == "__main__":
-
-    question = input("Ask ResearchIQ: ")
-
-    result = answer_question(question)
-
-    print("\nResearchIQ Answer:\n")
-    print(result["answer"])
-
-    print("\nSources Retrieved:\n")
-
-    if result["sources"]:
-        for source in result["sources"]:
-            print(
-                f"Page: {source['page']} | "
-                f"Similarity: {source['similarity']}"
-            )
-    else:
-        print("No sources found.")

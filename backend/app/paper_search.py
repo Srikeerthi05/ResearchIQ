@@ -1,41 +1,23 @@
 
 from pathlib import Path
-import json
 
 import faiss
-import numpy as np
-from sentence_transformers import SentenceTransformer
 
-from app.pdf_processor import extract_text_from_pdf
-from app.chunker import chunk_text
-
-
-# Load the embedding model
-model = SentenceTransformer("all-MiniLM-L6-v2")
-
-
-# Project paths
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-
-PDF_PATH = (
-    PROJECT_ROOT
-    / "data"
-    / "papers"
-    / "AttentionIsAllYouNeed.pdf"
+from backend.app.pdf_processor import extract_text_from_pdf
+from backend.app.chunker import chunk_text
+from backend.app.embeddings import generate_embeddings
+from backend.app.vector_store import (
+    save_vector_store,
+    load_vector_store,
+    vector_store_exists
 )
 
-INDEX_DIR = PROJECT_ROOT / "data" / "index"
 
-FAISS_PATH = INDEX_DIR / "paper.index"
-CHUNKS_PATH = INDEX_DIR / "chunks.json"
-
-
-# Build FAISS index from PDF
-def build_search_index():
+def build_search_index(pdf_path, document_id):
 
     print("Extracting text from PDF...")
 
-    pages = extract_text_from_pdf(str(PDF_PATH))
+    pages = extract_text_from_pdf(str(pdf_path))
 
     all_chunks = []
 
@@ -46,111 +28,60 @@ def build_search_index():
         for chunk in chunks:
 
             all_chunks.append({
+                "document_id": document_id,
                 "page_number": page["page_number"],
                 "text": chunk
             })
 
     if not all_chunks:
-        raise ValueError("No text chunks found in the PDF.")
+        raise ValueError(
+            "No text chunks found in the PDF."
+        )
 
     print("Generating embeddings...")
 
-    texts = [chunk["text"] for chunk in all_chunks]
+    texts = [
+        chunk["text"]
+        for chunk in all_chunks
+    ]
 
-    embeddings = model.encode(
-        texts,
-        normalize_embeddings=True
-    )
+    embeddings = generate_embeddings(texts)
 
-    embeddings = np.array(
-        embeddings,
-        dtype="float32"
-    )
+    print("Building FAISS index...")
 
-    index = faiss.IndexFlatIP(
-        embeddings.shape[1]
-    )
+    dimension = embeddings.shape[1]
+
+    index = faiss.IndexFlatIP(dimension)
 
     index.add(embeddings)
 
+    save_vector_store(
+        document_id,
+        index,
+        all_chunks
+    )
+
+    print("Document index created successfully!")
+
     return index, all_chunks
 
 
-# Save FAISS index and chunks
-def save_search_index(index, all_chunks):
+def load_document_index(document_id):
 
-    INDEX_DIR.mkdir(
-        parents=True,
-        exist_ok=True
-    )
-
-    faiss.write_index(
-        index,
-        str(FAISS_PATH)
-    )
-
-    with open(
-        CHUNKS_PATH,
-        "w",
-        encoding="utf-8"
-    ) as file:
-
-        json.dump(
-            all_chunks,
-            file,
-            ensure_ascii=False,
-            indent=4
+    if not vector_store_exists(document_id):
+        raise FileNotFoundError(
+            f"No index exists for document: {document_id}"
         )
 
-    print("FAISS index and chunks saved successfully!")
+    return load_vector_store(document_id)
 
 
-# Load previously saved index and chunks
-def load_search_index():
-
-    index = faiss.read_index(
-        str(FAISS_PATH)
-    )
-
-    with open(
-        CHUNKS_PATH,
-        "r",
-        encoding="utf-8"
-    ) as file:
-
-        all_chunks = json.load(file)
-
-    return index, all_chunks
-
-
-# Load existing index or build a new one
-def load_or_build_search_index():
-
-    if FAISS_PATH.exists() and CHUNKS_PATH.exists():
-
-        print("Loading existing FAISS index...")
-
-        return load_search_index()
-
-    print("Building a new FAISS index...")
-
-    index, all_chunks = build_search_index()
-
-    save_search_index(index, all_chunks)
-
-    return index, all_chunks
-
-
-# Search for relevant chunks
 def search_paper(query, index, all_chunks, k=3):
 
     if index.ntotal == 0:
         return []
 
-    query_embedding = model.encode(
-        [query],
-        normalize_embeddings=True
-    ).astype("float32")
+    query_embedding = generate_embeddings([query])
 
     k = min(k, index.ntotal)
 
@@ -167,9 +98,11 @@ def search_paper(query, index, all_chunks, k=3):
             continue
 
         results.append({
+            "document_id": all_chunks[idx]["document_id"],
             "similarity": float(score),
             "page_number": all_chunks[idx]["page_number"],
-            "text": all_chunks[idx]["text"]
+            "text": all_chunks[idx]["text"],
+            "chunk_id": int(idx)
         })
 
     return results

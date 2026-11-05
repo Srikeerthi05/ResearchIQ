@@ -1,53 +1,87 @@
 
+import json
+from pathlib import Path
+
 import faiss
-import numpy as np
-from sentence_transformers import SentenceTransformer
 
-# Load embedding model
-model = SentenceTransformer("all-MiniLM-L6-v2")
 
-# Sample research text chunks
-documents = [
-    "Artificial intelligence is transforming healthcare through automation.",
-    "Machine learning helps computers learn patterns from data.",
-    "Deep learning uses neural networks with multiple layers.",
-    "The Transformer architecture uses attention mechanisms.",
-    "Pizza is a popular Italian food."
-]
+# Project storage directory
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+INDEX_ROOT = PROJECT_ROOT / "data" / "index"
 
-# Convert documents into embeddings
-embeddings = model.encode(
-    documents,
-    normalize_embeddings=True
-)
 
-# FAISS requires float32 vectors
-embeddings = np.array(embeddings, dtype="float32")
+def get_document_index_dir(document_id: str) -> Path:
 
-# Create FAISS index
-dimension = embeddings.shape[1]
-index = faiss.IndexFlatIP(dimension)
+    return INDEX_ROOT / document_id
 
-# Add document vectors to the index
-index.add(embeddings)
 
-# Search with a question
-query = "How does AI help in medicine?"
+def save_vector_store(document_id, index, chunks):
 
-query_vector = model.encode(
-    [query],
-    normalize_embeddings=True
-)
+    index_dir = get_document_index_dir(document_id)
 
-query_vector = np.array(query_vector, dtype="float32")
+    index_dir.mkdir(
+        parents=True,
+        exist_ok=True
+    )
 
-# Retrieve top 3 matching documents
-scores, indices = index.search(query_vector, k=3)
+    index_path = index_dir / "paper.index"
+    chunks_path = index_dir / "chunks.json"
 
-print("\nUser query:", query)
-print("\nMost relevant documents:\n")
+    # Save FAISS index
+    faiss.write_index(
+        index,
+        str(index_path)
+    )
 
-for score, idx in zip(scores[0], indices[0]):
-    print(f"Similarity: {score:.4f}")
-    print("Document:", documents[idx])
-    print()
+    # Save chunk metadata
+    with open(
+        chunks_path,
+        "w",
+        encoding="utf-8"
+    ) as file:
+
+        json.dump(
+            chunks,
+            file,
+            ensure_ascii=False,
+            indent=4
+        )
+
+
+def load_vector_store(document_id):
+
+    index_dir = get_document_index_dir(document_id)
+
+    index_path = index_dir / "paper.index"
+    chunks_path = index_dir / "chunks.json"
+
+    if not index_path.exists() or not chunks_path.exists():
+        raise FileNotFoundError(
+            f"Vector store not found for document: {document_id}"
+        )
+
+    # Load FAISS index
+    index = faiss.read_index(
+        str(index_path)
+    )
+
+    # Load chunks
+    with open(
+        chunks_path,
+        "r",
+        encoding="utf-8"
+    ) as file:
+
+        chunks = json.load(file)
+
+    return index, chunks
+
+
+def vector_store_exists(document_id):
+
+    index_dir = get_document_index_dir(document_id)
+
+    return (
+        (index_dir / "paper.index").exists()
+        and (index_dir / "chunks.json").exists()
+    )
