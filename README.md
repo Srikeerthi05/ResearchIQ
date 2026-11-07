@@ -335,7 +335,7 @@ Install the following before running the application:
 ### Step 1: Clone the Repository
 
 ```bash
-git clone <YOUR_GITHUB_REPOSITORY_URL>
+git clone (https://github.com/Srikeerthi05/ResearchIQ)
 cd ResearchIQ
 ```
 
