@@ -1,3 +1,4 @@
+
 import json
 from pathlib import Path
 from statistics import mean
@@ -6,6 +7,8 @@ from backend.app.paper_search import (
     load_document_index,
     search_paper
 )
+
+from backend.app.embeddings import generate_embeddings
 
 from backend.app.evaluation.retrieval_metrics import (
     precision_at_k,
@@ -35,12 +38,11 @@ def evaluate_retrieval(k=5):
     if not dataset:
         raise ValueError("Evaluation dataset is empty.")
 
-    # Store scores for calculating averages
     precision_scores = []
     recall_scores = []
     reciprocal_ranks = []
 
-    # Cache document indexes to avoid loading the same PDF repeatedly
+    # Cache document indexes
     document_cache = {}
 
     for test_case in dataset:
@@ -54,10 +56,10 @@ def evaluate_retrieval(k=5):
                 f"No relevant chunk IDs provided for: {question}"
             )
 
-        print("\n" + "=" * 55)
-        print("Question:", question)
+        print("\n" + "=" * 60)
+        print("QUESTION:", question)
 
-        # Load document index
+        # Load document index only once
         if document_id not in document_cache:
             document_cache[document_id] = load_document_index(
                 document_id
@@ -92,56 +94,139 @@ def evaluate_retrieval(k=5):
         ]
 
         # Display retrieved chunks
-        print("\nRetrieved Chunk Details:")
+        print("\nRETRIEVED CHUNK DETAILS")
+        print("-" * 40)
 
         for result in results:
+
             print("\nChunk ID:", result["chunk_id"])
             print("Page:", result["page_number"])
             print("Similarity:", round(result["similarity"], 4))
             print("Text:", result["text"][:300])
             print("-" * 50)
 
-        # Calculate evaluation metrics
+        # Display ground-truth chunks
+        print("\nGROUND-TRUTH CHUNK DETAILS")
+        print("-" * 40)
+
+        for chunk_id in sorted(relevant_ids):
+
+            chunk = chunks[chunk_id]
+
+            print("\nChunk ID:", chunk_id)
+            print("Page:", chunk["page_number"])
+            print("Text:", chunk["text"][:600])
+            print("-" * 50)
+
+        # ==========================================
+        # DEBUG: GROUND-TRUTH RANKING ANALYSIS
+        # ==========================================
+
+        query_embedding = generate_embeddings([question])
+
+        all_scores, all_indices = index.search(
+            query_embedding,
+            index.ntotal
+        )
+
+        print("\nGROUND-TRUTH RANKING ANALYSIS")
+        print("-" * 40)
+
+        for relevant_id in sorted(relevant_ids):
+
+            positions = [
+                rank + 1
+                for rank, chunk_id in enumerate(all_indices[0])
+                if chunk_id == relevant_id
+            ]
+
+            if positions:
+
+                rank = positions[0]
+                similarity = all_scores[0][rank - 1]
+
+                print(
+                    f"Chunk {relevant_id} | "
+                    f"Rank: {rank} | "
+                    f"Similarity: {similarity:.4f}"
+                )
+
+            else:
+                print(
+                    f"Chunk {relevant_id} was not found."
+                )
+
+        # ==========================================
+        # EVALUATION METRICS
+        # ==========================================
+
         precision = precision_at_k(
-            retrieved_ids, relevant_ids, k
+            retrieved_ids,
+            relevant_ids,
+            k
         )
 
         recall = recall_at_k(
-            retrieved_ids, relevant_ids, k
+            retrieved_ids,
+            relevant_ids,
+            k
         )
 
         rr = reciprocal_rank(
-            retrieved_ids, relevant_ids
+            retrieved_ids,
+            relevant_ids
         )
 
-        # Store scores
         precision_scores.append(precision)
         recall_scores.append(recall)
         reciprocal_ranks.append(rr)
 
-        # Display individual results
-        print("\nRetrieved chunk IDs:", retrieved_ids)
-        print("Relevant chunk IDs:", sorted(relevant_ids))
+        print("\nINDIVIDUAL EVALUATION RESULTS")
+        print("-" * 40)
 
-        print("\nIndividual Evaluation Results")
-        print("-" * 35)
+        print("Retrieved IDs:", retrieved_ids)
+        print("Relevant IDs:", sorted(relevant_ids))
+
         print(f"Precision@{k}: {precision:.4f}")
         print(f"Recall@{k}:    {recall:.4f}")
         print(f"Reciprocal Rank: {rr:.4f}")
 
-    # Calculate average metrics across all questions
-    print("\n" + "=" * 55)
+    # ==========================================
+    # FINAL EVALUATION
+    # ==========================================
+
+    print("\n" + "=" * 60)
     print("FINAL RETRIEVAL EVALUATION")
-    print("=" * 55)
+    print("=" * 60)
 
     print("Total Questions Evaluated:", len(dataset))
 
-    print(f"Average Precision@{k}: {mean(precision_scores):.4f}")
-    print(f"Average Recall@{k}:    {mean(recall_scores):.4f}")
-    print(f"Mean Reciprocal Rank:  {mean(reciprocal_ranks):.4f}")
+    print(
+        f"Average Precision@{k}: "
+        f"{mean(precision_scores):.4f}"
+    )
 
-    print("=" * 55)
+    print(
+        f"Average Recall@{k}: "
+        f"{mean(recall_scores):.4f}"
+    )
+
+    print(
+        f"Mean Reciprocal Rank: "
+        f"{mean(reciprocal_ranks):.4f}"
+    )
+
+    print("=" * 60)
 
 
 if __name__ == "__main__":
-    evaluate_retrieval()
+
+    k_values = [1,3,5,10]
+
+    for k in k_values:
+
+        print("\n" + "#" * 60)
+        print(f"RUNNING EVALUATION FOR K = {k}")
+        print("#" * 60)
+
+        evaluate_retrieval(k=k)

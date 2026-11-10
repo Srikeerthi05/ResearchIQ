@@ -27,6 +27,11 @@ def save_vector_store(document_id, index, chunks):
     index_path = index_dir / "paper.index"
     chunks_path = index_dir / "chunks.json"
 
+    if index.ntotal != len(chunks):
+        raise ValueError(
+            "FAISS index and chunk metadata have different sizes."
+        )
+
     # Save FAISS index
     faiss.write_index(
         index,
@@ -73,6 +78,13 @@ def load_vector_store(document_id):
     ) as file:
 
         chunks = json.load(file)
+
+    # Validate index and metadata consistency
+    if index.ntotal != len(chunks):
+        raise ValueError(
+            f"Index contains {index.ntotal} vectors, "
+            f"but metadata contains {len(chunks)} chunks."
+        )
 
     return index, chunks
 

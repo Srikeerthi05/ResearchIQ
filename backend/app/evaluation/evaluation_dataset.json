@@ -2,7 +2,7 @@
     {
         "question": "What is the Transformer architecture?",
         "document_id": "38eef68c88ea4b2d881d3b3969f27aa4",
-        "relevant_chunk_ids": [6, 10, 11]
+        "relevant_chunk_ids": [10, 11]
     },
     {
         "question": "What is self-attention?",
@@ -22,6 +22,6 @@
     {
         "question": "What is the role of feed-forward networks in the Transformer?",
         "document_id": "38eef68c88ea4b2d881d3b3969f27aa4",
-        "relevant_chunk_ids": [10,19,18]
+        "relevant_chunk_ids": [10,19]
     }
 ]

@@ -1,0 +1,222 @@
+[
+    {
+        "question_number": 1,
+        "question": "What is the Transformer architecture?",
+        "answer": "The Transformer architecture is composed of a stacked self-attention mechanism and point-wise, fully connected layers for both the encoder and decoder. It consists of N = 6 identical layers, each containing two sub-layers: a multi-head self-attention mechanism and a simple, position-wise fully connected feed-forward network. The output of each sub-layer is LayerNorm(x + Sublayer(x)), where Sublayer(x) is the function implemented by the sub-layer itself. The model employs residual connections and layer normalization around each sub-layer. All sub-layers and embedding layers produce outputs of dimension dmodel = 512.",
+        "sources": [
+            {
+                "page": 3,
+                "similarity": 0.4763
+            },
+            {
+                "page": 2,
+                "similarity": 0.4431
+            },
+            {
+                "page": 8,
+                "similarity": 0.3753
+            }
+        ],
+        "context": "\n[Page 3]\nFigure 1: The Transformer - model architecture. The Transformer follows this overall architecture using stacked self-attention and point-wise, fully connected layers for both the encoder and decoder, shown in the left and right halves of Figure 1, respectively. 3.1 Encoder and Decoder Stacks Encoder: The encoder is composed of a stack of N = 6 identical layers. Each layer has two sub-layers. The first is a multi-head self-attention mechanism, and the second is a simple, position- wise fully connected feed-forward network. We employ a residual connection [11] around each of the two sub-layers, followed by layer normalization [1]. That is, the output of each sub-layer is LayerNorm(x + Sublayer(x)), where Sublayer(x) is the function implemented by the sub-layer itself. To facilitate these residual connections, all sub-layers in the model, as well as the embedding layers, produce outputs of dimension dmodel = 512. Decoder: The decoder is also composed of a\n\n\n[Page 2]\nto draw global dependencies between input and output. The Transformer allows for significantly more parallelization and can reach a new state of the art in translation quality after being trained for as little as twelve hours on eight P100 GPUs. 2 Background The goal of reducing sequential computation also forms the foundation of the Extended Neural GPU [16], ByteNet [18] and ConvS2S [9], all of which use convolutional neural networks as basic building block, computing hidden representations in parallel for all input and output positions. In these models, the number of operations required to relate signals from two arbitrary input or output positions grows in the distance between positions, linearly for ConvS2S and logarithmically for ByteNet. This makes it more difficult to learn dependencies between distant positions [12]. In the Transformer this is reduced to a constant number of operations, albeit at the cost of reduced effective resolution due to\n\n\n[Page 8]\nsingle-precision floating-point capacity of each GPU 5. 6.2 Model Variations To evaluate the importance of different components of the Transformer, we varied our base model in different ways, measuring the change in performance on English-to-German translation on the 5We used values of 2.8, 3.7, 6.0 and 9.5 TFLOPS for K80, K40, M40 and P100, respectively. 8\n",
+        "retrieved_chunks": [
+            {
+                "document_id": "38eef68c88ea4b2d881d3b3969f27aa4",
+                "similarity": 0.4762815833091736,
+                "page_number": 3,
+                "text": "Figure 1: The Transformer - model architecture. The Transformer follows this overall architecture using stacked self-attention and point-wise, fully connected layers for both the encoder and decoder, shown in the left and right halves of Figure 1, respectively. 3.1 Encoder and Decoder Stacks Encoder: The encoder is composed of a stack of N = 6 identical layers. Each layer has two sub-layers. The first is a multi-head self-attention mechanism, and the second is a simple, position- wise fully connected feed-forward network. We employ a residual connection [11] around each of the two sub-layers, followed by layer normalization [1]. That is, the output of each sub-layer is LayerNorm(x + Sublayer(x)), where Sublayer(x) is the function implemented by the sub-layer itself. To facilitate these residual connections, all sub-layers in the model, as well as the embedding layers, produce outputs of dimension dmodel = 512. Decoder: The decoder is also composed of a",
+                "chunk_id": 10
+            },
+            {
+                "document_id": "38eef68c88ea4b2d881d3b3969f27aa4",
+                "similarity": 0.4431253671646118,
+                "page_number": 2,
+                "text": "to draw global dependencies between input and output. The Transformer allows for significantly more parallelization and can reach a new state of the art in translation quality after being trained for as little as twelve hours on eight P100 GPUs. 2 Background The goal of reducing sequential computation also forms the foundation of the Extended Neural GPU [16], ByteNet [18] and ConvS2S [9], all of which use convolutional neural networks as basic building block, computing hidden representations in parallel for all input and output positions. In these models, the number of operations required to relate signals from two arbitrary input or output positions grows in the distance between positions, linearly for ConvS2S and logarithmically for ByteNet. This makes it more difficult to learn dependencies between distant positions [12]. In the Transformer this is reduced to a constant number of operations, albeit at the cost of reduced effective resolution due to",
+                "chunk_id": 6
+            },
+            {
+                "document_id": "38eef68c88ea4b2d881d3b3969f27aa4",
+                "similarity": 0.3753175735473633,
+                "page_number": 8,
+                "text": "single-precision floating-point capacity of each GPU 5. 6.2 Model Variations To evaluate the importance of different components of the Transformer, we varied our base model in different ways, measuring the change in performance on English-to-German translation on the 5We used values of 2.8, 3.7, 6.0 and 9.5 TFLOPS for K80, K40, M40 and P100, respectively. 8",
+                "chunk_id": 36
+            }
+        ],
+        "status": "success"
+    },
+    {
+        "question_number": 2,
+        "question": "What is self-attention?",
+        "answer": "Self-attention is a mechanism used in neural network architectures, particularly in the Transformer model, to allow a model to attend to specific positions within a sequence. It involves the use of multi-head attention, where each position in the sequence can attend to all positions in the previous layer of the sequence. This allows the model to capture dependencies between positions in the sequence, which is crucial for tasks such as language modeling and sequence-to-sequence translation. Self-attention is characterized by its ability to reduce the dimensionality of each head, making it computationally efficient, and its flexibility in attending to positions within the sequence, which is particularly useful for tasks that require understanding of the context of the sequence.",
+        "sources": [
+            {
+                "page": 6,
+                "similarity": 0.5146
+            },
+            {
+                "page": 5,
+                "similarity": 0.4986
+            },
+            {
+                "page": 3,
+                "similarity": 0.4873
+            }
+        ],
+        "context": "\n[Page 6]\neasily learn to attend by relative positions, since for any fixed offset k, PEpos+k can be represented as a linear function of PEpos. We also experimented with using learned positional embeddings [9] instead, and found that the two versions produced nearly identical results (see Table 3 row (E)). We chose the sinusoidal version because it may allow the model to extrapolate to sequence lengths longer than the ones encountered during training. 4 Why Self-Attention In this section we compare various aspects of self-attention layers to the recurrent and convolu- tional layers commonly used for mapping one variable-length sequence of symbol representations (x1, ..., xn) to another sequence of equal length (z1, ..., zn), with xi, zi ∈Rd, such as a hidden layer in a typical sequence transduction encoder or decoder. Motivating our use of self-attention we consider three desiderata. One is the total computational complexity per layer. Another is the\n\n\n[Page 5]\nreduced dimension of each head, the total computational cost is similar to that of single-head attention with full dimensionality. 3.2.3 Applications of Attention in our Model The Transformer uses multi-head attention in three different ways: • In \"encoder-decoder attention\" layers, the queries come from the previous decoder layer, and the memory keys and values come from the output of the encoder. This allows every position in the decoder to attend over all positions in the input sequence. This mimics the typical encoder-decoder attention mechanisms in sequence-to-sequence models such as [38, 2, 9]. • The encoder contains self-attention layers. In a self-attention layer all of the keys, values and queries come from the same place, in this case, the output of the previous layer in the encoder. Each position in the encoder can attend to all positions in the previous layer of the encoder. • Similarly, self-attention layers in the decoder\n\n\n[Page 3]\ncan depend only on the known outputs at positions less than i. 3.2 Attention An attention function can be described as mapping a query and a set of key-value pairs to an output, where the query, keys, values, and output are all vectors. The output is computed as a weighted sum 3\n",
+        "retrieved_chunks": [
+            {
+                "document_id": "38eef68c88ea4b2d881d3b3969f27aa4",
+                "similarity": 0.5146018862724304,
+                "page_number": 6,
+                "text": "easily learn to attend by relative positions, since for any fixed offset k, PEpos+k can be represented as a linear function of PEpos. We also experimented with using learned positional embeddings [9] instead, and found that the two versions produced nearly identical results (see Table 3 row (E)). We chose the sinusoidal version because it may allow the model to extrapolate to sequence lengths longer than the ones encountered during training. 4 Why Self-Attention In this section we compare various aspects of self-attention layers to the recurrent and convolu- tional layers commonly used for mapping one variable-length sequence of symbol representations (x1, ..., xn) to another sequence of equal length (z1, ..., zn), with xi, zi ∈Rd, such as a hidden layer in a typical sequence transduction encoder or decoder. Motivating our use of self-attention we consider three desiderata. One is the total computational complexity per layer. Another is the",
+                "chunk_id": 24
+            },
+            {
+                "document_id": "38eef68c88ea4b2d881d3b3969f27aa4",
+                "similarity": 0.49863311648368835,
+                "page_number": 5,
+                "text": "reduced dimension of each head, the total computational cost is similar to that of single-head attention with full dimensionality. 3.2.3 Applications of Attention in our Model The Transformer uses multi-head attention in three different ways: • In \"encoder-decoder attention\" layers, the queries come from the previous decoder layer, and the memory keys and values come from the output of the encoder. This allows every position in the decoder to attend over all positions in the input sequence. This mimics the typical encoder-decoder attention mechanisms in sequence-to-sequence models such as [38, 2, 9]. • The encoder contains self-attention layers. In a self-attention layer all of the keys, values and queries come from the same place, in this case, the output of the previous layer in the encoder. Each position in the encoder can attend to all positions in the previous layer of the encoder. • Similarly, self-attention layers in the decoder",
+                "chunk_id": 18
+            },
+            {
+                "document_id": "38eef68c88ea4b2d881d3b3969f27aa4",
+                "similarity": 0.48731470108032227,
+                "page_number": 3,
+                "text": "can depend only on the known outputs at positions less than i. 3.2 Attention An attention function can be described as mapping a query and a set of key-value pairs to an output, where the query, keys, values, and output are all vectors. The output is computed as a weighted sum 3",
+                "chunk_id": 12
+            }
+        ],
+        "status": "success"
+    },
+    {
+        "question_number": 3,
+        "question": "What is multi-head attention?",
+        "answer": "Multi-head attention is a technique used in the Transformer model to allow the model to jointly attend to information from different representation subspaces at different positions. It involves the following steps:\n\n1. **Query, Key, and Value Matrices**: For each head, the model uses three matrices:\n   - **Query Matrix (Q)**: Maps the query vector to the key and value matrices.\n   - **Key Matrix (K)**: Maps the key vector to the key and value matrices.\n   - **Value Matrix (V)**: Maps the value vector to the key and value matrices.\n\n2. **Attention Function**: The attention function is computed as:\n   \\[\n   \\text{Attention}(Q, K, V) = \\text{softmax}(\\frac{QK^T}{\\sqrt{d_k}})\n   \\]\n   where \\( d_k \\) is the dimension of the key matrix.\n\n3. **Multi-Head Attention**: The model uses multiple attention heads (h heads), each with its own query, key, and value matrices. The final output is a weighted sum of the outputs from each head:\n   \\[\n   \\text{Multi-Head}(Q, K, V) = \\text{Concat}(head_1, ..., head_h)W_O\n   \\]\n   where \\( head_i = \\text{Attention}(Q_i, K_i, V_i) \\) and \\( W_O \\) is a projection matrix.\n\n4. **Weighting and Projection**: The outputs from each head are concatenated and then projected to produce the final output.\n\n5. **Reduced Dimensionality**: By using multiple heads, each with a reduced dimension (d_model/h), the total computational cost is similar to that of single-head attention with full dimensionality. This reduces the computational complexity and allows the model to handle larger inputs efficiently.\n\n6. **Applications**: Multi-head attention is used in the Transformer model to improve the model's ability to understand the context of words and sentences by attending to information from different parts of the input sequence.",
+        "sources": [
+            {
+                "page": 14,
+                "similarity": 0.6246
+            },
+            {
+                "page": 3,
+                "similarity": 0.5841
+            },
+            {
+                "page": 5,
+                "similarity": 0.5593
+            }
+        ],
+        "context": "\n[Page 14]\ninvolved in anaphora resolution. Top: Full attentions for head 5. Bottom: Isolated attentions from just the word ‘its’ for attention heads 5 and 6. Note that the attentions are very sharp for this word. 14\n\n\n[Page 3]\ncan depend only on the known outputs at positions less than i. 3.2 Attention An attention function can be described as mapping a query and a set of key-value pairs to an output, where the query, keys, values, and output are all vectors. The output is computed as a weighted sum 3\n\n\n[Page 5]\noutput values. These are concatenated and once again projected, resulting in the final values, as depicted in Figure 2. Multi-head attention allows the model to jointly attend to information from different representation subspaces at different positions. With a single attention head, averaging inhibits this. MultiHead(Q, K, V ) = Concat(head1, ..., headh)W O where headi = Attention(QW Q i , KW K i , V W V i ) Where the projections are parameter matrices W Q i ∈Rdmodel×dk, W K i ∈Rdmodel×dk, W V i ∈Rdmodel×dv and W O ∈Rhdv×dmodel. In this work we employ h = 8 parallel attention layers, or heads. For each of these we use dk = dv = dmodel/h = 64. Due to the reduced dimension of each head, the total computational cost is similar to that of single-head attention with full dimensionality. 3.2.3 Applications of Attention in our Model The Transformer uses multi-head\n",
+        "retrieved_chunks": [
+            {
+                "document_id": "38eef68c88ea4b2d881d3b3969f27aa4",
+                "similarity": 0.6246050596237183,
+                "page_number": 14,
+                "text": "involved in anaphora resolution. Top: Full attentions for head 5. Bottom: Isolated attentions from just the word ‘its’ for attention heads 5 and 6. Note that the attentions are very sharp for this word. 14",
+                "chunk_id": 57
+            },
+            {
+                "document_id": "38eef68c88ea4b2d881d3b3969f27aa4",
+                "similarity": 0.5841476917266846,
+                "page_number": 3,
+                "text": "can depend only on the known outputs at positions less than i. 3.2 Attention An attention function can be described as mapping a query and a set of key-value pairs to an output, where the query, keys, values, and output are all vectors. The output is computed as a weighted sum 3",
+                "chunk_id": 12
+            },
+            {
+                "document_id": "38eef68c88ea4b2d881d3b3969f27aa4",
+                "similarity": 0.5592836141586304,
+                "page_number": 5,
+                "text": "output values. These are concatenated and once again projected, resulting in the final values, as depicted in Figure 2. Multi-head attention allows the model to jointly attend to information from different representation subspaces at different positions. With a single attention head, averaging inhibits this. MultiHead(Q, K, V ) = Concat(head1, ..., headh)W O where headi = Attention(QW Q i , KW K i , V W V i ) Where the projections are parameter matrices W Q i ∈Rdmodel×dk, W K i ∈Rdmodel×dk, W V i ∈Rdmodel×dv and W O ∈Rhdv×dmodel. In this work we employ h = 8 parallel attention layers, or heads. For each of these we use dk = dv = dmodel/h = 64. Due to the reduced dimension of each head, the total computational cost is similar to that of single-head attention with full dimensionality. 3.2.3 Applications of Attention in our Model The Transformer uses multi-head",
+                "chunk_id": 17
+            }
+        ],
+        "status": "success"
+    },
+    {
+        "question_number": 4,
+        "question": "Why does the Transformer use positional encoding?",
+        "answer": "The Transformer uses positional encoding to ensure that the model can distinguish between different positions in the input sequence. This is crucial because the Transformer relies on self-attention mechanisms to compute relationships between elements in the sequence, and these relationships are sensitive to the order of elements. By adding positional information to the input, the Transformer can effectively encode the relative positions of elements in the sequence, allowing the model to learn meaningful representations even when the input sequence is of variable length.\n\nPositional encoding is a technique that assigns a fixed vector to each position in the sequence, which is then combined with the actual input features to create the final input to the model. This positional information is essential for the Transformer's ability to handle sequences of varying lengths and to capture the dependencies between elements in the sequence.\n\nThe positional encoding is typically a fixed vector that is added to the input features, and it is designed to be periodic, meaning that it repeats every 2π radians. This periodicity is used to ensure that the model can distinguish between different positions in the sequence, even if the sequence is of variable length.\n\nIn summary, the Transformer uses positional encoding to ensure that the model can effectively learn representations of the input sequence, even when the sequence is of variable length, and to capture the dependencies between elements in the sequence.",
+        "sources": [
+            {
+                "page": 3,
+                "similarity": 0.4758
+            },
+            {
+                "page": 2,
+                "similarity": 0.4436
+            },
+            {
+                "page": 5,
+                "similarity": 0.4407
+            }
+        ],
+        "context": "\n[Page 3]\nFigure 1: The Transformer - model architecture. The Transformer follows this overall architecture using stacked self-attention and point-wise, fully connected layers for both the encoder and decoder, shown in the left and right halves of Figure 1, respectively. 3.1 Encoder and Decoder Stacks Encoder: The encoder is composed of a stack of N = 6 identical layers. Each layer has two sub-layers. The first is a multi-head self-attention mechanism, and the second is a simple, position- wise fully connected feed-forward network. We employ a residual connection [11] around each of the two sub-layers, followed by layer normalization [1]. That is, the output of each sub-layer is LayerNorm(x + Sublayer(x)), where Sublayer(x) is the function implemented by the sub-layer itself. To facilitate these residual connections, all sub-layers in the model, as well as the embedding layers, produce outputs of dimension dmodel = 512. Decoder: The decoder is also composed of a\n\n\n[Page 2]\nto draw global dependencies between input and output. The Transformer allows for significantly more parallelization and can reach a new state of the art in translation quality after being trained for as little as twelve hours on eight P100 GPUs. 2 Background The goal of reducing sequential computation also forms the foundation of the Extended Neural GPU [16], ByteNet [18] and ConvS2S [9], all of which use convolutional neural networks as basic building block, computing hidden representations in parallel for all input and output positions. In these models, the number of operations required to relate signals from two arbitrary input or output positions grows in the distance between positions, linearly for ConvS2S and logarithmically for ByteNet. This makes it more difficult to learn dependencies between distant positions [12]. In the Transformer this is reduced to a constant number of operations, albeit at the cost of reduced effective resolution due to\n\n\n[Page 5]\nreduced dimension of each head, the total computational cost is similar to that of single-head attention with full dimensionality. 3.2.3 Applications of Attention in our Model The Transformer uses multi-head attention in three different ways: • In \"encoder-decoder attention\" layers, the queries come from the previous decoder layer, and the memory keys and values come from the output of the encoder. This allows every position in the decoder to attend over all positions in the input sequence. This mimics the typical encoder-decoder attention mechanisms in sequence-to-sequence models such as [38, 2, 9]. • The encoder contains self-attention layers. In a self-attention layer all of the keys, values and queries come from the same place, in this case, the output of the previous layer in the encoder. Each position in the encoder can attend to all positions in the previous layer of the encoder. • Similarly, self-attention layers in the decoder\n",
+        "retrieved_chunks": [
+            {
+                "document_id": "38eef68c88ea4b2d881d3b3969f27aa4",
+                "similarity": 0.47575968503952026,
+                "page_number": 3,
+                "text": "Figure 1: The Transformer - model architecture. The Transformer follows this overall architecture using stacked self-attention and point-wise, fully connected layers for both the encoder and decoder, shown in the left and right halves of Figure 1, respectively. 3.1 Encoder and Decoder Stacks Encoder: The encoder is composed of a stack of N = 6 identical layers. Each layer has two sub-layers. The first is a multi-head self-attention mechanism, and the second is a simple, position- wise fully connected feed-forward network. We employ a residual connection [11] around each of the two sub-layers, followed by layer normalization [1]. That is, the output of each sub-layer is LayerNorm(x + Sublayer(x)), where Sublayer(x) is the function implemented by the sub-layer itself. To facilitate these residual connections, all sub-layers in the model, as well as the embedding layers, produce outputs of dimension dmodel = 512. Decoder: The decoder is also composed of a",
+                "chunk_id": 10
+            },
+            {
+                "document_id": "38eef68c88ea4b2d881d3b3969f27aa4",
+                "similarity": 0.44355255365371704,
+                "page_number": 2,
+                "text": "to draw global dependencies between input and output. The Transformer allows for significantly more parallelization and can reach a new state of the art in translation quality after being trained for as little as twelve hours on eight P100 GPUs. 2 Background The goal of reducing sequential computation also forms the foundation of the Extended Neural GPU [16], ByteNet [18] and ConvS2S [9], all of which use convolutional neural networks as basic building block, computing hidden representations in parallel for all input and output positions. In these models, the number of operations required to relate signals from two arbitrary input or output positions grows in the distance between positions, linearly for ConvS2S and logarithmically for ByteNet. This makes it more difficult to learn dependencies between distant positions [12]. In the Transformer this is reduced to a constant number of operations, albeit at the cost of reduced effective resolution due to",
+                "chunk_id": 6
+            },
+            {
+                "document_id": "38eef68c88ea4b2d881d3b3969f27aa4",
+                "similarity": 0.44068872928619385,
+                "page_number": 5,
+                "text": "reduced dimension of each head, the total computational cost is similar to that of single-head attention with full dimensionality. 3.2.3 Applications of Attention in our Model The Transformer uses multi-head attention in three different ways: • In \"encoder-decoder attention\" layers, the queries come from the previous decoder layer, and the memory keys and values come from the output of the encoder. This allows every position in the decoder to attend over all positions in the input sequence. This mimics the typical encoder-decoder attention mechanisms in sequence-to-sequence models such as [38, 2, 9]. • The encoder contains self-attention layers. In a self-attention layer all of the keys, values and queries come from the same place, in this case, the output of the previous layer in the encoder. Each position in the encoder can attend to all positions in the previous layer of the encoder. • Similarly, self-attention layers in the decoder",
+                "chunk_id": 18
+            }
+        ],
+        "status": "success"
+    },
+    {
+        "question_number": 5,
+        "question": "What is the role of feed-forward networks in the Transformer?",
+        "answer": "The role of feed-forward networks in the Transformer is to process each position independently and identically, applying two linear transformations followed by a ReLU activation. This allows for parallel processing of all positions within a layer, contributing to the model's efficiency and ability to handle large input sizes.",
+        "sources": [
+            {
+                "page": 3,
+                "similarity": 0.6042
+            },
+            {
+                "page": 2,
+                "similarity": 0.4784
+            },
+            {
+                "page": 5,
+                "similarity": 0.4546
+            }
+        ],
+        "context": "\n[Page 3]\nFigure 1: The Transformer - model architecture. The Transformer follows this overall architecture using stacked self-attention and point-wise, fully connected layers for both the encoder and decoder, shown in the left and right halves of Figure 1, respectively. 3.1 Encoder and Decoder Stacks Encoder: The encoder is composed of a stack of N = 6 identical layers. Each layer has two sub-layers. The first is a multi-head self-attention mechanism, and the second is a simple, position- wise fully connected feed-forward network. We employ a residual connection [11] around each of the two sub-layers, followed by layer normalization [1]. That is, the output of each sub-layer is LayerNorm(x + Sublayer(x)), where Sublayer(x) is the function implemented by the sub-layer itself. To facilitate these residual connections, all sub-layers in the model, as well as the embedding layers, produce outputs of dimension dmodel = 512. Decoder: The decoder is also composed of a\n\n\n[Page 2]\nto draw global dependencies between input and output. The Transformer allows for significantly more parallelization and can reach a new state of the art in translation quality after being trained for as little as twelve hours on eight P100 GPUs. 2 Background The goal of reducing sequential computation also forms the foundation of the Extended Neural GPU [16], ByteNet [18] and ConvS2S [9], all of which use convolutional neural networks as basic building block, computing hidden representations in parallel for all input and output positions. In these models, the number of operations required to relate signals from two arbitrary input or output positions grows in the distance between positions, linearly for ConvS2S and logarithmically for ByteNet. This makes it more difficult to learn dependencies between distant positions [12]. In the Transformer this is reduced to a constant number of operations, albeit at the cost of reduced effective resolution due to\n\n\n[Page 5]\nthe previous layer in the encoder. Each position in the encoder can attend to all positions in the previous layer of the encoder. • Similarly, self-attention layers in the decoder allow each position in the decoder to attend to all positions in the decoder up to and including that position. We need to prevent leftward information flow in the decoder to preserve the auto-regressive property. We implement this inside of scaled dot-product attention by masking out (setting to −∞) all values in the input of the softmax which correspond to illegal connections. See Figure 2. 3.3 Position-wise Feed-Forward Networks In addition to attention sub-layers, each of the layers in our encoder and decoder contains a fully connected feed-forward network, which is applied to each position separately and identically. This consists of two linear transformations with a ReLU activation in between. FFN(x) = max(0, xW1 + b1)W2 + b2 (2) While\n",
+        "retrieved_chunks": [
+            {
+                "document_id": "38eef68c88ea4b2d881d3b3969f27aa4",
+                "similarity": 0.6042011976242065,
+                "page_number": 3,
+                "text": "Figure 1: The Transformer - model architecture. The Transformer follows this overall architecture using stacked self-attention and point-wise, fully connected layers for both the encoder and decoder, shown in the left and right halves of Figure 1, respectively. 3.1 Encoder and Decoder Stacks Encoder: The encoder is composed of a stack of N = 6 identical layers. Each layer has two sub-layers. The first is a multi-head self-attention mechanism, and the second is a simple, position- wise fully connected feed-forward network. We employ a residual connection [11] around each of the two sub-layers, followed by layer normalization [1]. That is, the output of each sub-layer is LayerNorm(x + Sublayer(x)), where Sublayer(x) is the function implemented by the sub-layer itself. To facilitate these residual connections, all sub-layers in the model, as well as the embedding layers, produce outputs of dimension dmodel = 512. Decoder: The decoder is also composed of a",
+                "chunk_id": 10
+            },
+            {
+                "document_id": "38eef68c88ea4b2d881d3b3969f27aa4",
+                "similarity": 0.47844380140304565,
+                "page_number": 2,
+                "text": "to draw global dependencies between input and output. The Transformer allows for significantly more parallelization and can reach a new state of the art in translation quality after being trained for as little as twelve hours on eight P100 GPUs. 2 Background The goal of reducing sequential computation also forms the foundation of the Extended Neural GPU [16], ByteNet [18] and ConvS2S [9], all of which use convolutional neural networks as basic building block, computing hidden representations in parallel for all input and output positions. In these models, the number of operations required to relate signals from two arbitrary input or output positions grows in the distance between positions, linearly for ConvS2S and logarithmically for ByteNet. This makes it more difficult to learn dependencies between distant positions [12]. In the Transformer this is reduced to a constant number of operations, albeit at the cost of reduced effective resolution due to",
+                "chunk_id": 6
+            },
+            {
+                "document_id": "38eef68c88ea4b2d881d3b3969f27aa4",
+                "similarity": 0.4545893669128418,
+                "page_number": 5,
+                "text": "the previous layer in the encoder. Each position in the encoder can attend to all positions in the previous layer of the encoder. • Similarly, self-attention layers in the decoder allow each position in the decoder to attend to all positions in the decoder up to and including that position. We need to prevent leftward information flow in the decoder to preserve the auto-regressive property. We implement this inside of scaled dot-product attention by masking out (setting to −∞) all values in the input of the softmax which correspond to illegal connections. See Figure 2. 3.3 Position-wise Feed-Forward Networks In addition to attention sub-layers, each of the layers in our encoder and decoder contains a fully connected feed-forward network, which is applied to each position separately and identically. This consists of two linear transformations with a ReLU activation in between. FFN(x) = max(0, xW1 + b1)W2 + b2 (2) While",
+                "chunk_id": 19
+            }
+        ],
+        "status": "success"
+    }
+]

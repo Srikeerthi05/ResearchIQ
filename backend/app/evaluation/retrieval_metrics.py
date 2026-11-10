@@ -10,7 +10,7 @@ def precision_at_k(retrieved_ids, relevant_ids, k):
         return 0.0
 
     relevant_count = sum(
-        1 for chunk_id in retrieved
+        1 for chunk_id in set(retrieved)
         if chunk_id in relevant_ids
     )
 
@@ -28,16 +28,25 @@ def recall_at_k(retrieved_ids, relevant_ids, k):
     retrieved = retrieved_ids[:k]
 
     relevant_count = sum(
-        1 for chunk_id in retrieved
+        1 for chunk_id in set(retrieved)
         if chunk_id in relevant_ids
     )
 
     return relevant_count / len(relevant_ids)
 
 
-def reciprocal_rank(retrieved_ids, relevant_ids):
+def reciprocal_rank(retrieved_ids, relevant_ids, k=None):
 
-    for rank, chunk_id in enumerate(retrieved_ids, start=1):
+    if k is not None and k <= 0:
+        raise ValueError("k must be greater than zero")
+
+    retrieved = (
+        retrieved_ids
+        if k is None
+        else retrieved_ids[:k]
+    )
+
+    for rank, chunk_id in enumerate(retrieved, start=1):
 
         if chunk_id in relevant_ids:
             return 1 / rank

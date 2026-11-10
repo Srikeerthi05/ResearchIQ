@@ -3,11 +3,17 @@ import httpx
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
 
+
 def generate_answer(prompt):
+
     payload = {
         "model": "qwen2.5:1.5b",
         "prompt": prompt,
-        "stream": False
+        "stream": False,
+        "options": {
+            "temperature": 0,
+            "seed": 42
+        }
     }
 
     response = httpx.post(
@@ -24,6 +30,7 @@ def generate_answer(prompt):
 
 
 if __name__ == "__main__":
+
     question = "Explain the Transformer architecture in simple terms."
 
     answer = generate_answer(question)
